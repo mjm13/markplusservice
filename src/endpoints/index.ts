@@ -39,7 +39,7 @@ export class Index extends OpenAPIRoute {
 	async handle(c) {
 		return {
 			success: true,
-			result: "helloword"
+			result: "helloword-test"
 		};
 	}
 }
