@@ -7,8 +7,9 @@ const secret = 'my_very_strong_secret_key';
 // 登录接口
 app.get('/login', async (c) => {
     const username = c.req.query('username') || 'anonymous';
-    if(username != 'mjm'){
-        return c.json({ error: 'Invalid username' }, 401);
+    const pwd = c.req.query('pwd') || 'anonymous';
+    if(username != 'mjm' && pwd!='asdf!@#$1234'){
+        return c.json({ error: 'Invalid user' }, 401);
     }
     const payload = { sub: username, role: 'admin' };
     const token = await sign(payload, secret);
@@ -32,10 +33,10 @@ const authMiddleware = async (c, next) => {
 };
 
 // API 路由
-app.get('/api/index', authMiddleware, async (c) => {
+app.get('/test', authMiddleware, async (c) => {
     return c.json({
         success: true,
-        result: "helloword-test"
+        result: "connection sucess"
     });
 });
 
@@ -68,7 +69,7 @@ app.get('/api/tasks', authMiddleware, async (c) => {
 // 创建任务
 app.post('/api/tasks', authMiddleware, async (c) => {
     const body = await c.req.json();
-    
+
     return c.json({
         success: true,
         task: {
@@ -97,22 +98,4 @@ app.get('/api/tasks/:taskSlug', authMiddleware, async (c) => {
     });
 });
 
-// 删除任务
-app.delete('/api/tasks/:taskSlug', authMiddleware, async (c) => {
-    const taskSlug = c.req.param('taskSlug');
-
-    return c.json({
-        success: true,
-        result: {
-            task: {
-                name: "Build something awesome with Cloudflare Workers",
-                slug: taskSlug,
-                description: "Lorem Ipsum",
-                completed: true,
-                due_date: "2022-12-24",
-            },
-        },
-    });
-});
-
-export default app; 
+export default app;
