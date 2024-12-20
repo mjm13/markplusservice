@@ -1,10 +1,9 @@
-# Cloudflare Workers API
+# Hono 使用记录
+参数获取
+```javascript
+c.req.query('username')
+c.req.json()
+c.req.param('taskSlug')
+```
 
-## API 端点
-
-### 认证
-- GET /login?username=mjm
-  - 返回 JWT token
-
-### 任务管理
-所有 API 请求需要在 Header 中包含 Bearer Token：
+ wrangler d1 execute markplus --file=init.sql --remote

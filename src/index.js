@@ -1,8 +1,11 @@
 import { Hono } from "hono";
 import { jwt, sign } from 'hono/jwt'
+import { cors } from 'hono/cors'
 
 const app = new Hono();
 const secret = 'my_very_strong_secret_key';
+
+app.use('/*', cors({origin:"*"}));
 
 // 登录接口
 app.get('/login', async (c) => {
@@ -41,44 +44,64 @@ app.get('/test', authMiddleware, async (c) => {
 });
 
 // 任务列表
-app.get('/api/tasks', authMiddleware, async (c) => {
-    const page = parseInt(c.req.query('page')) || 0;
-    const isCompleted = c.req.query('isCompleted') === 'true';
+app.post('/savebookmarks', authMiddleware, async (c) => {
+    const bookmarks  = await c.req.json();
+
+    const stmt = env.DB.prepare(`INSERT INTO bookmarks (
+                id, parentId, title, url, currentDomain, currentUrl,
+                dateAdded, dateGroupModified, index, treeld, treeName, domain, tag,
+                domainTitle, metaTitle, metaDescription, metaKeywords, metaImage,
+                childrenCount, status, dateAddedTime, dateGroupModifiedTime
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    var params = [];         
+    for (const bookmark of bookmarks) {
+        const {
+            id,parentId,title,url,currentDomain,currentUrl,dateGroupModified,dateAdded,
+            index,treeId,treeName,domain,tags,domainTitle,metaTitle,metaKeywords,metaDescription,
+            metaTags,syncChrome,type,childrenCount,status,dateAddedTime,dateGroupModifiedTime
+        } = bookmark;
+
+        params.push(stmt.bind(id,
+            parentId || '',
+            title || '',
+            url || '',
+            currentDomain || '',
+            currentUrl || '',
+            dateGroupModified || '',
+            dateAdded || '',
+            index || 0,
+            treeId || '',
+            treeName || '',
+            domain || '',
+            tags || '[]',
+            domainTitle || '',
+            metaTitle || '',
+            metaKeywords || '',
+            metaDescription || '',
+            metaTags || '',
+            syncChrome || false,
+            type || '',
+            childrenCount || 0,
+            status || 0,
+            dateAddedTime || '',
+            dateGroupModifiedTime || ''));
+    }
+    const results = await env.DB.batch(params);
 
     return c.json({
         success: true,
-        tasks: [
-            {
-                name: "Clean my room",
-                slug: "clean-room",
-                description: null,
-                completed: false,
-                due_date: "2025-01-05",
-            },
-            {
-                name: "Build something awesome with Cloudflare Workers",
-                slug: "cloudflare-workers",
-                description: "Lorem Ipsum",
-                completed: true,
-                due_date: "2022-12-24",
-            },
-        ],
+        message: 'Bookmarks saved successfully',
+        results: results
     });
 });
 
 // 创建任务
-app.post('/api/tasks', authMiddleware, async (c) => {
+app.post('/testparam', authMiddleware, async (c) => {
     const body = await c.req.json();
-
+    body['test'] = 'in markplusservice';
     return c.json({
         success: true,
-        task: {
-            name: body.name,
-            slug: body.slug,
-            description: body.description,
-            completed: body.completed || false,
-            due_date: body.due_date,
-        },
+        body
     });
 });
 
