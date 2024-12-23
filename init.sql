@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS bookmarks (
-    id TEXT NOT NULL,
+    `id` TEXT NOT NULL,
     parentId TEXT,
     title TEXT,
-    url TEXT,
+    `url` TEXT,
     currentDomain TEXT DEFAULT '',
     currentUrl TEXT DEFAULT '',
     dateGroupModified INTEGER,
     dateAdded INTEGER NOT NULL,
-    index INTEGER,
+    `index` INTEGER,
     treeId TEXT NOT NULL,
     treeName TEXT NOT NULL,
     domain TEXT,
@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS bookmarks (
     metaDescription TEXT DEFAULT '',
     metaTags TEXT DEFAULT '',
     syncChrome BOOLEAN DEFAULT TRUE,
-    type TEXT NOT NULL CHECK (type IN ('folder', 'bookmark')),
+    `type` TEXT NOT NULL CHECK (type IN ('folder', 'bookmark')),
     childrenCount INTEGER DEFAULT 0,
-    status INTEGER DEFAULT 0 CHECK (status IN (-1, 0, 1, 2)),
+    `status` INTEGER DEFAULT 0 CHECK (status IN (-1, 0, 1, 2)),
     dateAddedTime TEXT NOT NULL,
     dateGroupModifiedTime TEXT,
-    PRIMARY KEY (id)
+    PRIMARY KEY (`id`)
 );
 
